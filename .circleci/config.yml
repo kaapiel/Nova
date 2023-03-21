@@ -24,11 +24,11 @@ jobs:
 
             # Make a request to the Planning Center People API to retrieve a list of people with their zip codes
             people=$(curl -u 8828c28f84865de081cdeb0cd9d67162d64465925363df46f94ba95ee2bcc959:eacd9f8bc8500a49b672b2faa7f1073be668bd1f2516e66e512f741a8409b046 -s "https://api.planningcenteronline.com/people/v2/people?per_page=2&include=addresses&fields%5Baddresses%5D=zip")
-            echo "People retrieved"
+            echo "People retrieved:"
             echo $people
 
             # Extract the zip codes from the response and store them in a list
-            zip_codes=$(echo "$people" | jq -r '.data[].attributes.addresses[].zip' | sort -u)
+            zip_codes=$(echo "$people" | jq -r '.data[].relationships.addresses' | sort -u)
             echo "Zip codes retrieved"
 
             # Authenticate with the Google Maps API using your API key
