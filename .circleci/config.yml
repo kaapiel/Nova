@@ -1,26 +1,41 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+  update-map:
     docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      - image: circleci/python:3.9
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Install dependencies
+          command: |
+            sudo apt-get install -y jq
+            pip install googlemaps
+            curl https://raw.githubusercontent.com/ravenac95/super-fast-cli-gmail-cli/master/googlemaps.py --output googlemaps.py
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
-  say-hello-workflow:
-    jobs:
-      - say-hello
+      - run:
+          name: Update map
+          command: |
+            # Set your Planning Center People API key
+            PLANNING_CENTER_API_KEY="your_api_key_here"
+
+            # Set your Google Maps API key
+            GOOGLE_MAPS_API_KEY="your_api_key_here"
+
+            # Make a request to the Planning Center People API to retrieve a list of people with their zip codes
+            people=$(curl -s "https://api.planningcenteronline.com/people/v2/people?per_page=1000&include=addresses&fields%5Baddresses%5D=zip&access_token=$PLANNING_CENTER_API_KEY")
+
+            # Extract the zip codes from the response and store them in a list
+            zip_codes=$(echo "$people" | jq -r '.data[].attributes.addresses[].zip' | sort -u)
+
+            # Authenticate with the Google Maps API using your API key
+            maps_client=$(googlemaps --client-id "$GOOGLE_MAPS_API_KEY")
+
+            # Loop through each zip code and add a marker for each location on the map
+            for zip_code in $zip_codes; do
+              # Use the Google Maps API to convert the zip code into a latitude and longitude
+              location=$(echo "$maps_client" --geocode="$zip_code" | jq -r '.results[0].geometry.location | .lat, .lng')
+
+              # Update the existing map with the marker for the zip code location
+              echo "$maps_client" --id="your_map_id_here" --update --marker="$location"
+            done
