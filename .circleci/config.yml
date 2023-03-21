@@ -29,7 +29,8 @@ jobs:
 
             # Extract the zip codes from the response and store them in a list
             zip_codes=$(echo "$people" | jq -r '.data[].relationships.addresses' | sort -u)
-            echo "Zip codes retrieved"
+            echo "Zip codes retrieved:"
+            echo $zip_codes
 
             # Authenticate with the Google Maps API using your API key
             maps_client=$(googlemaps --client-id "$GOOGLE_MAPS_API_KEY")
