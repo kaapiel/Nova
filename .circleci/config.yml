@@ -24,12 +24,15 @@ jobs:
 
             # Make a request to the Planning Center People API to retrieve a list of people with their zip codes
             people=$(curl -s "https://api.planningcenteronline.com/people/v2/people?per_page=2&include=addresses&fields%5Baddresses%5D=zip&access_token=$PLANNING_CENTER_API_KEY")
+            echo "People retrieved"
 
             # Extract the zip codes from the response and store them in a list
             zip_codes=$(echo "$people" | jq -r '.data[].attributes.addresses[].zip' | sort -u)
+            echo "Zip codes retrieved"
 
             # Authenticate with the Google Maps API using your API key
             maps_client=$(googlemaps --client-id "$GOOGLE_MAPS_API_KEY")
+            echo "Google maps authenticated"
 
             # Loop through each zip code and add a marker for each location on the map
             for zip_code in $zip_codes; do
