@@ -23,7 +23,7 @@ jobs:
             GOOGLE_MAPS_API_KEY="AIzaSyAvnGQIkGBWuvpCT4ld_hqbI2kDjGtn92o"
 
             # Make a request to the Planning Center People API to retrieve a list of people with their zip codes
-            people=$(curl -s "https://api.planningcenteronline.com/people/v2/people?per_page=2&include=addresses&fields%5Baddresses%5D=zip&access_token=$PLANNING_CENTER_API_KEY")
+            people=$(curl -u 8828c28f84865de081cdeb0cd9d67162d64465925363df46f94ba95ee2bcc959:eacd9f8bc8500a49b672b2faa7f1073be668bd1f2516e66e512f741a8409b046 -s "https://api.planningcenteronline.com/people/v2/people?per_page=2&include=addresses&fields%5Baddresses%5D=zip")
             echo "People retrieved"
             echo $people
 
