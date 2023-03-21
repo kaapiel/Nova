@@ -17,13 +17,13 @@ jobs:
           name: Update map
           command: |
             # Set your Planning Center People API key
-            PLANNING_CENTER_API_KEY="your_api_key_here"
+            PLANNING_CENTER_API_KEY="0000000000000"
 
             # Set your Google Maps API key
-            GOOGLE_MAPS_API_KEY="your_api_key_here"
+            GOOGLE_MAPS_API_KEY="AIzaSyAvnGQIkGBWuvpCT4ld_hqbI2kDjGtn92o"
 
             # Make a request to the Planning Center People API to retrieve a list of people with their zip codes
-            people=$(curl -s "https://api.planningcenteronline.com/people/v2/people?per_page=1000&include=addresses&fields%5Baddresses%5D=zip&access_token=$PLANNING_CENTER_API_KEY")
+            people=$(curl -s "https://api.planningcenteronline.com/people/v2/people?per_page=2&include=addresses&fields%5Baddresses%5D=zip&access_token=$PLANNING_CENTER_API_KEY")
 
             # Extract the zip codes from the response and store them in a list
             zip_codes=$(echo "$people" | jq -r '.data[].attributes.addresses[].zip' | sort -u)
